@@ -10,6 +10,7 @@ from typing import Optional
 
 try:
     from fastapi import FastAPI, HTTPException
+    from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel
 except ImportError:
     raise ImportError("Install API extras: pip install voidlens[api]")
@@ -22,6 +23,14 @@ app = FastAPI(
     title="VoidLens API",
     description="Peer into the digital void — OSINT & Digital Footprint Intelligence API",
     version=__version__,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
