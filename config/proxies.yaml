@@ -1,0 +1,13 @@
+# VoidLens Proxy List
+# ───────────────────
+#
+# One proxy per line. Supported formats:
+#   http://host:port
+#   https://host:port
+#   socks4://host:port
+#   socks5://host:port
+#
+# Lines starting with # are ignored.
+
+# http://127.0.0.1:8080
+# socks5://127.0.0.1:1080

@@ -1,0 +1,21 @@
+# VoidLens Configuration
+# ─────────────────────
+
+timeout: 5
+concurrency: 100
+retries: 3
+retry_delay: 1.0
+cache_enabled: true
+cache_ttl: 3600
+log_dir: logs
+verbose: false
+
+# User Agent (leave empty for rotating defaults)
+user_agent: ""
+
+# Proxy Configuration
+proxy:
+  enabled: false
+  file: config/proxies.yaml
+  rotate: true
+  timeout: 5

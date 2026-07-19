@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voidlens"
+version = "1.0.0"
+description = "Peer into the digital void — A professional OSINT & Digital Footprint Intelligence Suite"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "VoidLens Contributors"}
+]
+keywords = ["osint", "cybersecurity", "reconnaissance", "digital-footprint", "username-scanner", "email-scanner"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Internet",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "aiohttp>=3.9.0",
+    "aiosqlite>=0.19.0",
+    "typer[all]>=0.9.0",
+    "rich>=13.0.0",
+    "colorama>=0.4.6",
+    "pyyaml>=6.0",
+    "pydantic>=2.0.0",
+    "aiohttp-socks>=0.8.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "aioresponses>=0.7.4",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+    "mypy>=1.5.0",
+]
+all = ["voidlens[api,dev]"]
+
+[project.urls]
+Homepage = "https://github.com/voidlens/voidlens"
+Repository = "https://github.com/voidlens/voidlens"
+Documentation = "https://github.com/voidlens/voidlens/tree/main/docs"
+Issues = "https://github.com/voidlens/voidlens/issues"
+
+[project.scripts]
+voidlens = "voidlens.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["voidlens*"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["voidlens"]
+omit = ["tests/*"]

@@ -1,0 +1,26 @@
+Query,Type,Site,Category,Status,URL,Reason,Response Time
+johndoe,username,GitHub,Developer,Found,https://github.com/johndoe,Profile exists,0.342s
+johndoe,username,Reddit,Forums,Found,https://reddit.com/user/johndoe,Profile exists,0.518s
+johndoe,username,Twitter,Social,Found,https://twitter.com/johndoe,Profile exists,0.291s
+johndoe,username,Instagram,Social,Not Found,https://www.instagram.com/johndoe/,Not found,0.445s
+johndoe,username,TikTok,Video,Not Found,https://www.tiktok.com/@johndoe,Not found,0.612s
+johndoe,username,Steam,Gaming,Found,https://steamcommunity.com/id/johndoe,Profile exists,0.387s
+johndoe,username,GitLab,Developer,Found,https://gitlab.com/johndoe,Profile exists,0.423s
+johndoe,username,Medium,Blogging,Found,https://medium.com/@johndoe,Profile exists,0.556s
+johndoe,username,DEV.to,Developer,Found,https://dev.to/johndoe,Profile exists,0.312s
+johndoe,username,HackerNews,Forums,Found,https://news.ycombinator.com/user?id=johndoe,Profile exists,0.198s
+johndoe,username,Pinterest,Social,Not Found,https://www.pinterest.com/johndoe/,Not found,0.501s
+johndoe,username,Twitch,Streaming,Found,https://www.twitch.tv/johndoe,Channel exists,0.445s
+johndoe,username,SoundCloud,Music,Not Found,https://soundcloud.com/johndoe,Not found,0.389s
+johndoe,username,Spotify,Music,Found,https://open.spotify.com/user/johndoe,Profile exists,0.267s
+johndoe,username,Keybase,Security,Not Found,https://keybase.io/johndoe,Not found,0.334s
+test@gmail.com,email,GitHub,Developer,Registered,https://github.com,Email found in public profile,0.412s
+test@gmail.com,email,Gravatar,Social,Registered,https://gravatar.com/abc123,Profile exists,0.223s
+test@gmail.com,email,Spotify,Music,Registered,https://spotify.com,Email already registered,0.345s
+test@gmail.com,email,Discord,Social,Registered,https://discord.com,Email registered,0.567s
+test@gmail.com,email,Reddit,Forums,Not Registered,https://reddit.com,Email available,0.289s
+test@gmail.com,email,Steam,Gaming,Registered,https://store.steampowered.com,Email in use,0.478s
+test@gmail.com,email,WordPress,Blogging,Registered,https://wordpress.com,Account exists,0.356s
+test@gmail.com,email,Chess.com,Gaming,Not Registered,https://chess.com,Email available,0.312s
+test@gmail.com,email,GitLab,Developer,Not Registered,https://gitlab.com,No match,0.445s
+test@gmail.com,email,Duolingo,Education,Registered,https://duolingo.com,Account found,0.523s
