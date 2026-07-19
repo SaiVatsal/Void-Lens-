@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoidLens // Digital Footprint Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --terminal-bg: #0a0a0a;
+            --primary: #00ff41;
+            --primary-dim: #008f24;
+            --primary-glow: rgba(0, 255, 65, 0.15);
+            --error: #ff3b30;
+            --accent: #00d2ff;
+            --text-color: #d1d1d1;
+            --border-color: #1a2a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #0d1f11 0%, #050505 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area h1 {
+            font-family: 'Fira Code', monospace;
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--primary-glow);
+            letter-spacing: -1px;
+        }
+
+        .logo-area p {
+            font-size: 0.85rem;
+            color: var(--primary-dim);
+            font-family: 'Fira Code', monospace;
+            margin-top: 0.2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem 4rem 1.5rem;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Config Panel */
+        .panel {
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-title {
+            font-family: 'Fira Code', monospace;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            color: var(--primary-dim);
+            font-family: 'Fira Code', monospace;
+            text-transform: uppercase;
+        }
+
+        .input-group input, .input-group select {
+            background: #0d0d0d;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        .toggle-group {
+            display: flex;
+            background: #0d0d0d;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.25rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--primary-dim);
+            padding: 0.6rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-dim);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-scan {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--primary-glow);
+            margin-top: 1rem;
+        }
+
+        .btn-scan:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .btn-scan:disabled {
+            border-color: #222;
+            color: #444;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Terminal Output */
+        .terminal-panel {
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .terminal-header {
+            background: #111;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2a2a2a;
+        }
+
+        .dot.red { background: var(--error); }
+        .dot.yellow { background: #ffb300; }
+        .dot.green { background: var(--primary); }
+
+        .terminal-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--primary-dim);
+        }
+
+        .terminal-content {
+            padding: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .term-green { color: var(--primary); }
+        .term-dim { color: var(--primary-dim); }
+        .term-error { color: var(--error); }
+        .term-cyan { color: var(--accent); }
+        .term-yellow { color: #ffaa00; }
+
+        .term-line {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Results table built dynamically */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-card {
+            background: #0d0d0d;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .result-card.Found, .result-card.Registered {
+            border-color: var(--primary-dim);
+            box-shadow: 0 0 5px rgba(0, 255, 65, 0.05);
+        }
+
+        .result-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .card-status {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .card-status.Found, .card-status.Registered {
+            background: var(--primary-glow);
+            color: var(--primary);
+        }
+
+        .card-status.NotFound, .card-status.NotRegistered {
+            background: rgba(255,255,255,0.05);
+            color: #666;
+        }
+
+        .card-status.Error {
+            background: rgba(255,59,48,0.1);
+            color: var(--error);
+        }
+
+        .card-link {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-decoration: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-link:hover {
+            text-decoration: underline;
+        }
+
+        .metadata-drawer {
+            font-size: 0.75rem;
+            color: #888;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 0.5rem;
+            margin-top: 0.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <h1>◈ VOIDLENS</h1>
+            <p>// digital footprint intelligence</p>
+        </div>
+        <div>
+            <a href="https://github.com/SaiVatsal/Void-Lens-" target="_blank" style="color: var(--primary); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 0.9rem;">[ GitHub Source ]</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Configuration Panel -->
+        <div class="panel">
+            <div class="panel-title">◈ TARGET RESOLVER</div>
+
+            <div class="input-group">
+                <label>Scan Target Type</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="type-username" onclick="setScanType('username')">USERNAME</button>
+                    <button class="toggle-btn" id="type-email" onclick="setScanType('email')">EMAIL</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label id="input-label">Username</label>
+                <input type="text" id="target-query" placeholder="e.g. johndoe" value="johndoe">
+            </div>
+
+            <div class="input-group">
+                <label>FastAPI Backend URL</label>
+                <input type="text" id="backend-url" placeholder="https://your-app.vercel.app" value="">
+                <p style="font-size: 0.75rem; color: #555; font-family: 'Fira Code', monospace;">Enter your Vercel URL here</p>
+            </div>
+
+            <button class="btn-scan" id="btn-submit" onclick="startScan()">INITIALIZE SCAN</button>
+        </div>
+
+        <!-- Terminal Output Panel -->
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <div class="terminal-title">voidlens@intelligence:~</div>
+                <div></div>
+            </div>
+            <div class="terminal-content" id="term-log">
+                <div class="term-line"><span class="term-green">◈ System ready.</span> Enter Target, Backend URL, and click INITIALIZE SCAN.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'username';
+
+        function setScanType(type) {
+            currentType = type;
+            document.getElementById('type-username').classList.toggle('active', type === 'username');
+            document.getElementById('type-email').classList.toggle('active', type === 'email');
+            
+            const label = document.getElementById('input-label');
+            const input = document.getElementById('target-query');
+            
+            if (type === 'username') {
+                label.innerText = 'Username';
+                input.placeholder = 'e.g. johndoe';
+                input.value = 'johndoe';
+            } else {
+                label.innerText = 'Email';
+                input.placeholder = 'e.g. test@gmail.com';
+                input.value = 'test@gmail.com';
+            }
+        }
+
+        function log(message, type = 'dim') {
+            const container = document.getElementById('term-log');
+            const line = document.createElement('div');
+            line.className = 'term-line';
+            
+            let colorClass = 'term-dim';
+            if (type === 'green') colorClass = 'term-green';
+            if (type === 'error') colorClass = 'term-error';
+            if (type === 'cyan') colorClass = 'term-cyan';
+            if (type === 'yellow') colorClass = 'term-yellow';
+
+            line.innerHTML = `<span class="${colorClass}">${message}</span>`;
+            container.appendChild(line);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function startScan() {
+            const query = document.getElementById('target-query').value.trim();
+            let backend = document.getElementById('backend-url').value.trim();
+
+            if (!query) {
+                log('Error: Target query is empty.', 'error');
+                return;
+            }
+
+            if (!backend) {
+                log('Error: FastAPI Backend URL is required for live scan. Please paste your Vercel deployment URL.', 'error');
+                return;
+            }
+
+            if (backend.endsWith('/')) {
+                backend = backend.slice(0, -1);
+            }
+
+            const submitBtn = document.getElementById('btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'SCANNING...';
+
+            const termLog = document.getElementById('term-log');
+            termLog.innerHTML = ''; // Clear terminal
+
+            log(`◈ Initializing VoidLens intelligence suite v1.0.0`, 'green');
+            log(`◈ Target: ${query}`, 'cyan');
+            log(`◈ Type: ${currentType.toUpperCase()}`, 'cyan');
+            log(`◈ Endpoint: ${backend}/scan/${currentType}`, 'dim');
+            log(`◈ Executing connection probe...`, 'dim');
+
+            try {
+                const response = await fetch(`${backend}/scan/${currentType}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        concurrency: 100,
+                        timeout: 5
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log(`◈ Scan completed in ${data.elapsed_seconds || 0}s`, 'green');
+                log(`◈ Total Modules: ${data.total} | Found: ${data.found} | Not Found: ${data.not_found} | Errors: ${data.errors}`, 'cyan');
+                
+                // Build results grid in the terminal log
+                log(`\n◈ DETAILED RESULTS:`, 'green');
+
+                const grid = document.createElement('div');
+                grid.className = 'results-grid';
+
+                data.results.forEach(res => {
+                    const card = document.createElement('div');
+                    const cleanStatusClass = res.status.replace(' ', '');
+                    card.className = `result-card ${cleanStatusClass}`;
+
+                    let metadataHtml = '';
+                    if (res.metadata && Object.keys(res.metadata).length > 0) {
+                        metadataHtml = '<div class="metadata-drawer">';
+                        for (const [k, v] of Object.entries(res.metadata)) {
+                            if (v && typeof v !== 'object') {
+                                metadataHtml += `<div><strong>${k}:</strong> ${v}</div>`;
+                            }
+                        }
+                        metadataHtml += '</div>';
+                    }
+
+                    card.innerHTML = `
+                        <div class="result-card-header">
+                            <span class="card-name">${res.site}</span>
+                            <span class="card-status ${cleanStatusClass}">${res.status}</span>
+                        </div>
+                        ${res.url ? `<a class="card-link" href="${res.url}" target="_blank">${res.url}</a>` : ''}
+                        ${metadataHtml}
+                    `;
+                    grid.appendChild(card);
+                });
+
+                termLog.appendChild(grid);
+                termLog.scrollTop = termLog.scrollHeight;
+
+            } catch (err) {
+                log(`◈ Scan execution failed: ${err.message}`, 'error');
+                log(`◈ Check your Vercel console logs or CORS settings.`, 'yellow');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'INITIALIZE SCAN';
+            }
+        }
+    </script>
+</body>
+</html>
