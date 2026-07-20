@@ -91,3 +91,6 @@ addopts = "-v --tb=short"
 [tool.coverage.run]
 source = ["voidlens"]
 omit = ["tests/*"]
+
+[tool.vercel]
+entrypoint = "voidlens.api:app"
