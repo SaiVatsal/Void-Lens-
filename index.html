@@ -3,528 +3,876 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoidLens // Digital Footprint Intelligence</title>
+    <title>VoidLens — Digital Footprint Intelligence Suite</title>
+    <meta name="description" content="Peer into the digital void. Scan emails and usernames across 30+ platforms instantly. OSINT & Digital Footprint Intelligence.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #050505;
-            --terminal-bg: #0a0a0a;
+            --bg: #030806;
+            --bg2: #0a0f0c;
+            --surface: #0d1410;
+            --surface2: #111a16;
             --primary: #00ff41;
-            --primary-dim: #008f24;
-            --primary-glow: rgba(0, 255, 65, 0.15);
+            --primary-dim: #00a82b;
+            --primary-glow: rgba(0,255,65,0.12);
+            --accent: #00d4ff;
+            --accent-glow: rgba(0,212,255,0.1);
             --error: #ff3b30;
-            --accent: #00d2ff;
-            --text-color: #d1d1d1;
-            --border-color: #1a2a1a;
+            --warning: #ffaa00;
+            --text: #e0e0e0;
+            --text-dim: #6b7c72;
+            --border: #1a2e22;
+            --border-light: #243830;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: var(--bg);
+            color: var(--text);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #0d1f11 0%, #050505 100%);
-            min-height: 100vh;
+            line-height: 1.6;
         }
 
-        header {
-            padding: 2rem 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(3,8,6,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .logo-area h1 {
+        .nav-logo {
             font-family: 'Fira Code', monospace;
             color: var(--primary);
-            font-size: 2rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            text-shadow: 0 0 10px var(--primary-glow);
-            letter-spacing: -1px;
+            text-shadow: 0 0 15px var(--primary-glow);
         }
-
-        .logo-area p {
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
             font-size: 0.85rem;
-            color: var(--primary-dim);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(0,255,65,0.06) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.04) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--primary-glow);
+            border: 1px solid rgba(0,255,65,0.2);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
             font-family: 'Fira Code', monospace;
-            margin-top: 0.2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1.5rem 4rem 1.5rem;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Config Panel */
-        .panel {
-            background: var(--terminal-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .panel-title {
-            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
             color: var(--primary);
-            font-weight: bold;
-            font-size: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-bottom: 2rem;
+            animation: pulse-border 2s infinite;
         }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(0,255,65,0.2); }
+            50% { border-color: rgba(0,255,65,0.5); }
         }
-
-        .input-group label {
-            font-size: 0.8rem;
-            color: var(--primary-dim);
+        .hero h1 {
             font-family: 'Fira Code', monospace;
-            text-transform: uppercase;
-        }
-
-        .input-group input, .input-group select {
-            background: #0d0d0d;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.75rem;
+            font-size: clamp(2.5rem, 6vw, 5rem);
             color: #fff;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+        }
+        .hero h1 span { color: var(--primary); text-shadow: 0 0 30px var(--primary-glow); }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+        .hero-cta {
+            display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+        }
+        .btn {
             font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            padding: 0.9rem 2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 5px var(--primary-glow);
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            box-shadow: 0 0 25px rgba(0,255,65,0.3);
         }
+        .btn-primary:hover { box-shadow: 0 0 40px rgba(0,255,65,0.5); transform: translateY(-2px); }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary-dim);
+        }
+        .btn-outline:hover { background: var(--primary-glow); }
+        .hero-stats {
+            display: flex; gap: 3rem; margin-top: 4rem; flex-wrap: wrap; justify-content: center;
+        }
+        .stat { text-align: center; }
+        .stat-num { font-family: 'Fira Code', monospace; font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.3rem; }
 
-        .toggle-group {
+        /* ── SECTIONS ── */
+        section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+        }
+        .section-heading {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .section-desc { color: var(--text-dim); max-width: 600px; margin-bottom: 3rem; }
+
+        /* ── FEATURES ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            border-color: var(--primary-dim);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .feature-card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover::after { opacity: 1; }
+        .feature-icon {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .feature-card h3 { color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature-card p { color: var(--text-dim); font-size: 0.9rem; }
+
+        /* ── MODULES ── */
+        .modules-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .modules-section > div { max-width: 1200px; margin: 0 auto; }
+        .module-group { margin-bottom: 2.5rem; }
+        .module-group-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .module-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .module-tag {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .module-tag:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* ── SCAN SECTION ── */
+        #scan { position: relative; }
+        .scan-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .trial-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(255,170,0,0.1);
+            border: 1px solid rgba(255,170,0,0.3);
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--warning);
+            margin-bottom: 1.5rem;
+        }
+        .scan-toggle {
             display: flex;
-            background: #0d0d0d;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.25rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
         }
-
-        .toggle-btn {
+        .scan-toggle button {
             flex: 1;
             background: transparent;
             border: none;
-            color: var(--primary-dim);
-            padding: 0.6rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active {
-            background: var(--primary-dim);
-            color: #000;
-            font-weight: bold;
-        }
-
-        .btn-scan {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 1rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px var(--primary-glow);
-            margin-top: 1rem;
-        }
-
-        .btn-scan:hover {
-            background: var(--primary);
-            color: #000;
-            box-shadow: 0 0 20px var(--primary);
-        }
-
-        .btn-scan:disabled {
-            border-color: #222;
-            color: #444;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        /* Terminal Output */
-        .terminal-panel {
-            background: var(--terminal-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            height: 600px;
-        }
-
-        .terminal-header {
-            background: #111;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 6px 6px 0 0;
-        }
-
-        .terminal-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2a2a2a;
-        }
-
-        .dot.red { background: var(--error); }
-        .dot.yellow { background: #ffb300; }
-        .dot.green { background: var(--primary); }
-
-        .terminal-title {
+            color: var(--text-dim);
+            padding: 0.7rem;
             font-family: 'Fira Code', monospace;
             font-size: 0.8rem;
-            color: var(--primary-dim);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
-
-        .terminal-content {
-            padding: 1.5rem;
+        .scan-toggle button.active {
+            background: var(--primary-dim);
+            color: #000;
+            font-weight: 700;
+        }
+        .scan-input-wrap {
+            display: flex; gap: 0.75rem; margin-bottom: 1.5rem;
+        }
+        .scan-input-wrap input {
             flex: 1;
-            overflow-y: auto;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.9rem 1rem;
+            color: #fff;
             font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
-            line-height: 1.5;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
         }
-
-        .term-green { color: var(--primary); }
-        .term-dim { color: var(--primary-dim); }
-        .term-error { color: var(--error); }
-        .term-cyan { color: var(--accent); }
-        .term-yellow { color: #ffaa00; }
-
-        .term-line {
-            display: flex;
-            gap: 0.5rem;
+        .scan-input-wrap input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        .btn-scan {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.3s;
         }
+        .btn-scan:hover { box-shadow: 0 0 20px rgba(0,255,65,0.4); }
+        .btn-scan:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
 
-        /* Results table built dynamically */
+        /* ── RESULTS TERMINAL ── */
+        .terminal {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            display: none;
+            overflow: hidden;
+        }
+        .terminal.show { display: block; }
+        .terminal-bar {
+            background: #111;
+            padding: 0.6rem 1rem;
+            display: flex; align-items: center; gap: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+        .tdot { width: 10px; height: 10px; border-radius: 50%; }
+        .tdot.r { background: #ff3b30; }
+        .tdot.y { background: #ffb300; }
+        .tdot.g { background: #00ff41; }
+        .terminal-body {
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.7;
+        }
+        .tg { color: var(--primary); }
+        .tc { color: var(--accent); }
+        .te { color: var(--error); }
+        .tw { color: var(--warning); }
+        .td { color: var(--text-dim); }
+
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
         }
-
-        .result-card {
-            background: #0d0d0d;
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            position: relative;
+        .r-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.8rem;
         }
-
-        .result-card.Found, .result-card.Registered {
-            border-color: var(--primary-dim);
-            box-shadow: 0 0 5px rgba(0, 255, 65, 0.05);
-        }
-
-        .result-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-name {
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .card-status {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.5rem;
+        .r-card.found { border-color: var(--primary-dim); }
+        .r-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+        .r-card-name { font-weight: 600; font-size: 0.85rem; color: #fff; }
+        .r-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
             border-radius: 3px;
-            font-weight: bold;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
         }
+        .r-badge.found { background: var(--primary-glow); color: var(--primary); }
+        .r-badge.notfound { background: rgba(255,255,255,0.05); color: #555; }
+        .r-badge.error { background: rgba(255,59,48,0.1); color: var(--error); }
+        .r-link { font-size: 0.7rem; color: var(--accent); text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .r-link:hover { text-decoration: underline; }
 
-        .card-status.Found, .card-status.Registered {
-            background: var(--primary-glow);
-            color: var(--primary);
-        }
-
-        .card-status.NotFound, .card-status.NotRegistered {
-            background: rgba(255,255,255,0.05);
-            color: #666;
-        }
-
-        .card-status.Error {
-            background: rgba(255,59,48,0.1);
-            color: var(--error);
-        }
-
-        .card-link {
-            font-size: 0.75rem;
-            color: var(--accent);
-            text-decoration: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .card-link:hover {
-            text-decoration: underline;
-        }
-
-        .metadata-drawer {
-            font-size: 0.75rem;
-            color: #888;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 0.5rem;
-            margin-top: 0.25rem;
-            display: flex;
+        /* ── PAYWALL OVERLAY ── */
+        .paywall {
+            display: none;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3,8,6,0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            z-index: 10;
             flex-direction: column;
-            gap: 0.2rem;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .paywall.show { display: flex; }
+        .paywall h3 { font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
+        .paywall p { color: var(--text-dim); margin-bottom: 1.5rem; }
+
+        /* ── PRICING ── */
+        .currency-toggle {
+            display: inline-flex;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 2.5rem;
+        }
+        .currency-toggle button {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 0.5rem 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+        .currency-toggle button.active { background: var(--primary-dim); color: #000; font-weight: 700; }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .price-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .price-card:hover { transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .price-card.popular {
+            border-color: var(--primary-dim);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .popular-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--primary);
+            color: #000;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+        }
+        .price-card h3 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+        .price-amount {
+            font-family: 'Fira Code', monospace;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        .price-amount span { font-size: 1rem; color: var(--text-dim); font-weight: 400; }
+        .price-features {
+            list-style: none;
+            text-align: left;
+            margin: 1.5rem 0 2rem;
+            display: flex; flex-direction: column; gap: 0.8rem;
+        }
+        .price-features li {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            display: flex; align-items: center; gap: 0.7rem;
+        }
+        .price-features li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .btn-price {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        .btn-price.primary { background: var(--primary); color: #000; border: none; }
+        .btn-price.primary:hover { box-shadow: 0 0 20px rgba(0,255,65,0.4); }
+        .btn-price.outline { background: transparent; color: var(--primary); border: 1px solid var(--border-light); }
+        .btn-price.outline:hover { border-color: var(--primary); }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        footer p { color: var(--text-dim); font-size: 0.8rem; }
+        footer a { color: var(--primary-dim); text-decoration: none; }
+        footer a:hover { color: var(--primary); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            nav { padding: 0.8rem 1rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: 0.75rem; }
+            section { padding: 3rem 1rem; }
+            .scan-input-wrap { flex-direction: column; }
+            .hero-stats { gap: 1.5rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-area">
-            <h1>◈ VOIDLENS</h1>
-            <p>// digital footprint intelligence</p>
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">◈ VOIDLENS</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#modules">Modules</a>
+            <a href="#scan">Scan</a>
+            <a href="#pricing">Pricing</a>
+            <a href="https://github.com/SaiVatsal/Void-Lens-" target="_blank">GitHub</a>
         </div>
-        <div>
-            <a href="https://github.com/SaiVatsal/Void-Lens-" target="_blank" style="color: var(--primary); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 0.9rem;">[ GitHub Source ]</a>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-badge">● LIVE — v1.0.0</div>
+        <h1>Peer Into The<br><span>Digital Void</span></h1>
+        <p>A professional 2-in-1 OSINT & Digital Footprint Intelligence Suite. Scan emails and usernames across 30+ platforms in seconds.</p>
+        <div class="hero-cta">
+            <a href="#scan" class="btn btn-primary">Start Scanning</a>
+            <a href="#features" class="btn btn-outline">Explore Features</a>
         </div>
-    </header>
-
-    <div class="container">
-        <!-- Configuration Panel -->
-        <div class="panel">
-            <div class="panel-title">◈ TARGET RESOLVER</div>
-
-            <div class="input-group">
-                <label>Scan Target Type</label>
-                <div class="toggle-group">
-                    <button class="toggle-btn active" id="type-username" onclick="setScanType('username')">USERNAME</button>
-                    <button class="toggle-btn" id="type-email" onclick="setScanType('email')">EMAIL</button>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label id="input-label">Username</label>
-                <input type="text" id="target-query" placeholder="e.g. johndoe" value="johndoe">
-            </div>
-
-            <div class="input-group">
-                <label>FastAPI Backend URL</label>
-                <input type="text" id="backend-url" placeholder="https://your-app.vercel.app" value="">
-                <p style="font-size: 0.75rem; color: #555; font-family: 'Fira Code', monospace;">Enter your Vercel URL here</p>
-            </div>
-
-            <button class="btn-scan" id="btn-submit" onclick="startScan()">INITIALIZE SCAN</button>
-        </div>
-
-        <!-- Terminal Output Panel -->
-        <div class="terminal-panel">
-            <div class="terminal-header">
-                <div class="terminal-dots">
-                    <div class="dot red"></div>
-                    <div class="dot yellow"></div>
-                    <div class="dot green"></div>
-                </div>
-                <div class="terminal-title">voidlens@intelligence:~</div>
-                <div></div>
-            </div>
-            <div class="terminal-content" id="term-log">
-                <div class="term-line"><span class="term-green">◈ System ready.</span> Enter Target, Backend URL, and click INITIALIZE SCAN.</div>
-            </div>
+        <div class="hero-stats">
+            <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Platforms</div></div>
+            <div class="stat"><div class="stat-num">&lt;5s</div><div class="stat-label">Avg Scan Time</div></div>
+            <div class="stat"><div class="stat-num">2</div><div class="stat-label">Scan Modes</div></div>
+            <div class="stat"><div class="stat-num">6</div><div class="stat-label">Export Formats</div></div>
         </div>
     </div>
 
+    <!-- FEATURES -->
+    <section id="features">
+        <div class="section-title">◈ Capabilities</div>
+        <h2 class="section-heading">Built for Serious Reconnaissance</h2>
+        <p class="section-desc">Every feature engineered for speed, stealth, and reliability.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📧</span>
+                <h3>Email Intelligence</h3>
+                <p>Check if an email is registered across 15+ services including GitHub, Discord, Spotify, Reddit, and Steam.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">👤</span>
+                <h3>Username Intelligence</h3>
+                <p>Scan usernames across 15+ platforms with metadata extraction — Instagram, TikTok, Twitter, Twitch, and more.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📱</span>
+                <h3>Phone Lookup</h3>
+                <p>Reverse phone number intelligence across carrier databases and social platforms. <strong style="color:var(--warning);">Coming Soon</strong></p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>Async Engine</h3>
+                <p>aiohttp with connection pooling, adaptive rate limiting, smart retries, and concurrent scanning across all modules.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔌</span>
+                <h3>Plugin Architecture</h3>
+                <p>Drop-in modules with auto-discovery. Add new platforms with zero engine changes.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Multi-Format Export</h3>
+                <p>Export results as JSON, CSV, HTML, Markdown, XML, or SARIF for integration with security tools.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🛡️</span>
+                <h3>Proxy & Stealth</h3>
+                <p>HTTP, HTTPS, SOCKS4/5 proxy support with rotation. User-agent randomization built in.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💾</span>
+                <h3>Smart Caching</h3>
+                <p>SQLite-backed cache prevents duplicate lookups with configurable TTL.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔗</span>
+                <h3>API & Library Mode</h3>
+                <p>FastAPI REST endpoints or importable async Python functions. Use it your way.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODULES -->
+    <section class="modules-section" id="modules" style="max-width:none; padding: 5rem 2rem;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div class="section-title">◈ Supported Platforms</div>
+            <h2 class="section-heading">30+ Modules & Growing</h2>
+            <p class="section-desc">Every module is a self-contained plugin. New platforms are added regularly.</p>
+            <div class="module-group">
+                <div class="module-group-title">📧 Email Scan Modules (15)</div>
+                <div class="module-tags">
+                    <span class="module-tag">GitHub</span>
+                    <span class="module-tag">Gravatar</span>
+                    <span class="module-tag">Spotify</span>
+                    <span class="module-tag">Discord</span>
+                    <span class="module-tag">Reddit</span>
+                    <span class="module-tag">Steam</span>
+                    <span class="module-tag">Pinterest</span>
+                    <span class="module-tag">Twitter</span>
+                    <span class="module-tag">Duolingo</span>
+                    <span class="module-tag">Chess.com</span>
+                    <span class="module-tag">GitLab</span>
+                    <span class="module-tag">Replit</span>
+                    <span class="module-tag">WordPress</span>
+                    <span class="module-tag">Tumblr</span>
+                    <span class="module-tag">Flickr</span>
+                </div>
+            </div>
+            <div class="module-group">
+                <div class="module-group-title">👤 Username Scan Modules (15)</div>
+                <div class="module-tags">
+                    <span class="module-tag">GitHub</span>
+                    <span class="module-tag">Reddit</span>
+                    <span class="module-tag">Twitter</span>
+                    <span class="module-tag">Instagram</span>
+                    <span class="module-tag">TikTok</span>
+                    <span class="module-tag">Steam</span>
+                    <span class="module-tag">GitLab</span>
+                    <span class="module-tag">Medium</span>
+                    <span class="module-tag">DEV.to</span>
+                    <span class="module-tag">Hacker News</span>
+                    <span class="module-tag">Pinterest</span>
+                    <span class="module-tag">Twitch</span>
+                    <span class="module-tag">SoundCloud</span>
+                    <span class="module-tag">Spotify</span>
+                    <span class="module-tag">Keybase</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCAN -->
+    <section id="scan">
+        <div class="section-title">◈ Live Scanner</div>
+        <h2 class="section-heading">Try It Now</h2>
+        <p class="section-desc">Enter an email or username and scan across all platforms instantly.</p>
+
+        <div class="scan-box" style="position:relative;">
+            <div class="trial-badge" id="trial-badge">⚡ <span id="trial-count">5</span> free scans remaining</div>
+
+            <div class="scan-toggle">
+                <button class="active" id="tog-username" onclick="setType('username')">USERNAME</button>
+                <button id="tog-email" onclick="setType('email')">EMAIL</button>
+                <button id="tog-phone" onclick="setType('phone')">PHONE</button>
+            </div>
+
+            <div class="scan-input-wrap">
+                <input type="text" id="scan-query" placeholder="e.g. johndoe">
+                <button class="btn-scan" id="btn-scan" onclick="doScan()">SCAN</button>
+            </div>
+
+            <div class="terminal" id="terminal">
+                <div class="terminal-bar">
+                    <div class="tdot r"></div><div class="tdot y"></div><div class="tdot g"></div>
+                </div>
+                <div class="terminal-body" id="term-out"></div>
+            </div>
+
+            <!-- Paywall -->
+            <div class="paywall" id="paywall">
+                <h3>Free Trial Exhausted</h3>
+                <p>You've used all 5 free scans. Upgrade to continue scanning.</p>
+                <a href="#pricing" class="btn btn-primary" onclick="document.getElementById('paywall').classList.remove('show')">View Plans</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+        <div class="section-title">◈ Pricing</div>
+        <h2 class="section-heading">Choose Your Plan</h2>
+        <p class="section-desc">Start free. Upgrade when you're ready.</p>
+
+        <div class="currency-toggle">
+            <button class="active" id="cur-usd" onclick="setCurrency('usd')">USD $</button>
+            <button id="cur-inr" onclick="setCurrency('inr')">INR ₹</button>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Free -->
+            <div class="price-card">
+                <h3>Free</h3>
+                <div class="price-amount" data-usd="$0" data-inr="₹0">$0<span>/forever</span></div>
+                <ul class="price-features">
+                    <li>5 total scans</li>
+                    <li>Email & username scan</li>
+                    <li>Basic results view</li>
+                    <li>Community support</li>
+                </ul>
+                <button class="btn-price outline" onclick="alert('You are on the Free plan!')">Current Plan</button>
+            </div>
+            <!-- Pro -->
+            <div class="price-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <h3>Pro</h3>
+                <div class="price-amount" data-usd="$9.99" data-inr="₹799">$9.99<span>/mo</span></div>
+                <ul class="price-features">
+                    <li>100 scans per day</li>
+                    <li>All scan modules</li>
+                    <li>JSON, CSV, HTML export</li>
+                    <li>API access</li>
+                    <li>Priority support</li>
+                </ul>
+                <button class="btn-price primary" onclick="alert('Payment integration coming soon!')">Subscribe</button>
+            </div>
+            <!-- Unlimited -->
+            <div class="price-card">
+                <h3>Unlimited</h3>
+                <div class="price-amount" data-usd="$29.99" data-inr="₹2,499">$29.99<span>/mo</span></div>
+                <ul class="price-features">
+                    <li>Unlimited scans</li>
+                    <li>All scan modules</li>
+                    <li>All export formats (SARIF)</li>
+                    <li>Proxy rotation support</li>
+                    <li>Dedicated support</li>
+                    <li>Custom modules on request</li>
+                </ul>
+                <button class="btn-price outline" onclick="alert('Payment integration coming soon!')">Subscribe</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p style="margin-bottom:0.5rem;">
+            <a href="https://github.com/SaiVatsal/Void-Lens-" target="_blank">GitHub</a> &nbsp;·&nbsp;
+            <a href="#features">Features</a> &nbsp;·&nbsp;
+            <a href="#pricing">Pricing</a>
+        </p>
+        <p>© 2026 VoidLens. For legitimate defensive security, OSINT research & digital footprint auditing.</p>
+        <p style="margin-top:0.3rem;">MIT License</p>
+    </footer>
+
     <script>
-        let currentType = 'username';
+        // ── State ──
+        let scanType = 'username';
+        let currency = 'usd';
+        const TRIAL_KEY = 'voidlens_scans';
+        const MAX_FREE = 5;
 
-        function setScanType(type) {
-            currentType = type;
-            document.getElementById('type-username').classList.toggle('active', type === 'username');
-            document.getElementById('type-email').classList.toggle('active', type === 'email');
-            
-            const label = document.getElementById('input-label');
-            const input = document.getElementById('target-query');
-            
-            if (type === 'username') {
-                label.innerText = 'Username';
-                input.placeholder = 'e.g. johndoe';
-                input.value = 'johndoe';
-            } else {
-                label.innerText = 'Email';
-                input.placeholder = 'e.g. test@gmail.com';
-                input.value = 'test@gmail.com';
+        // ── Trial tracking ──
+        function getUsed() { return parseInt(localStorage.getItem(TRIAL_KEY) || '0'); }
+        function setUsed(n) { localStorage.setItem(TRIAL_KEY, n); }
+        function updateTrialUI() {
+            const used = getUsed();
+            const left = Math.max(0, MAX_FREE - used);
+            document.getElementById('trial-count').textContent = left;
+            const badge = document.getElementById('trial-badge');
+            if (left === 0) {
+                badge.style.borderColor = 'rgba(255,59,48,0.4)';
+                badge.style.background = 'rgba(255,59,48,0.1)';
+                badge.style.color = '#ff3b30';
             }
         }
+        updateTrialUI();
 
-        function log(message, type = 'dim') {
-            const container = document.getElementById('term-log');
-            const line = document.createElement('div');
-            line.className = 'term-line';
-            
-            let colorClass = 'term-dim';
-            if (type === 'green') colorClass = 'term-green';
-            if (type === 'error') colorClass = 'term-error';
-            if (type === 'cyan') colorClass = 'term-cyan';
-            if (type === 'yellow') colorClass = 'term-yellow';
-
-            line.innerHTML = `<span class="${colorClass}">${message}</span>`;
-            container.appendChild(line);
-            container.scrollTop = container.scrollHeight;
+        // ── Scan type toggle ──
+        function setType(type) {
+            scanType = type;
+            document.getElementById('tog-username').classList.toggle('active', type === 'username');
+            document.getElementById('tog-email').classList.toggle('active', type === 'email');
+            document.getElementById('tog-phone').classList.toggle('active', type === 'phone');
+            const input = document.getElementById('scan-query');
+            if (type === 'username') input.placeholder = 'e.g. johndoe';
+            else if (type === 'email') input.placeholder = 'e.g. test@gmail.com';
+            else input.placeholder = 'e.g. +1 555 123 4567';
         }
 
-        async function startScan() {
-            const query = document.getElementById('target-query').value.trim();
-            let backend = document.getElementById('backend-url').value.trim();
+        // ── Currency toggle ──
+        function setCurrency(cur) {
+            currency = cur;
+            document.getElementById('cur-usd').classList.toggle('active', cur === 'usd');
+            document.getElementById('cur-inr').classList.toggle('active', cur === 'inr');
+            document.querySelectorAll('.price-amount').forEach(el => {
+                const val = el.getAttribute('data-' + cur);
+                el.innerHTML = val + '<span>/mo</span>';
+            });
+            // Fix the free plan
+            const freeEl = document.querySelector('.price-card:first-child .price-amount');
+            const freeVal = freeEl.getAttribute('data-' + cur);
+            freeEl.innerHTML = freeVal + '<span>/forever</span>';
+        }
 
-            if (!query) {
-                log('Error: Target query is empty.', 'error');
+        // ── Terminal logging ──
+        function tlog(msg, cls = 'td') {
+            const out = document.getElementById('term-out');
+            const d = document.createElement('div');
+            d.innerHTML = `<span class="${cls}">${msg}</span>`;
+            out.appendChild(d);
+            out.scrollTop = out.scrollHeight;
+        }
+
+        // ── Scan ──
+        async function doScan() {
+            const query = document.getElementById('scan-query').value.trim();
+            if (!query) return;
+
+            // Phone coming soon
+            if (scanType === 'phone') {
+                document.getElementById('terminal').classList.add('show');
+                document.getElementById('term-out').innerHTML = '';
+                tlog('◈ Phone lookup is coming soon. Stay tuned!', 'tw');
                 return;
             }
 
-            if (!backend) {
-                log('Error: FastAPI Backend URL is required for live scan. Please paste your Vercel deployment URL.', 'error');
+            // Trial check
+            const used = getUsed();
+            if (used >= MAX_FREE) {
+                document.getElementById('paywall').classList.add('show');
                 return;
             }
 
-            if (backend.endsWith('/')) {
-                backend = backend.slice(0, -1);
-            }
+            // Increment trial
+            setUsed(used + 1);
+            updateTrialUI();
 
-            const submitBtn = document.getElementById('btn-submit');
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'SCANNING...';
+            const btn = document.getElementById('btn-scan');
+            btn.disabled = true;
+            btn.textContent = 'SCANNING...';
 
-            const termLog = document.getElementById('term-log');
-            termLog.innerHTML = ''; // Clear terminal
+            const term = document.getElementById('terminal');
+            const out = document.getElementById('term-out');
+            term.classList.add('show');
+            out.innerHTML = '';
 
-            log(`◈ Initializing VoidLens intelligence suite v1.0.0`, 'green');
-            log(`◈ Target: ${query}`, 'cyan');
-            log(`◈ Type: ${currentType.toUpperCase()}`, 'cyan');
-            log(`◈ Endpoint: ${backend}/scan/${currentType}`, 'dim');
-            log(`◈ Executing connection probe...`, 'dim');
+            tlog(`◈ VoidLens v1.0.0 — Initializing scan`, 'tg');
+            tlog(`◈ Target: ${query}`, 'tc');
+            tlog(`◈ Type: ${scanType.toUpperCase()}`, 'tc');
+            tlog(`◈ Connecting to engine...`, 'td');
 
             try {
-                const response = await fetch(`${backend}/scan/${currentType}`, {
+                const res = await fetch(`/api/scan/${scanType}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: query,
-                        concurrency: 100,
-                        timeout: 5
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    tlog(`◈ Engine error: ${data.error}`, 'te');
+                } else {
+                    tlog(`◈ Scan complete in ${data.elapsed_seconds || 0}s`, 'tg');
+                    tlog(`◈ Found: ${data.found} | Not Found: ${data.not_found} | Errors: ${data.errors || 0}`, 'tc');
+
+                    const grid = document.createElement('div');
+                    grid.className = 'results-grid';
+                    (data.results || []).forEach(r => {
+                        const isFound = r.status === 'Found' || r.status === 'Registered';
+                        const card = document.createElement('div');
+                        card.className = `r-card ${isFound ? 'found' : ''}`;
+                        const badgeCls = isFound ? 'found' : (r.status === 'Error' ? 'error' : 'notfound');
+                        card.innerHTML = `
+                            <div class="r-card-head">
+                                <span class="r-card-name">${r.site}</span>
+                                <span class="r-badge ${badgeCls}">${r.status}</span>
+                            </div>
+                            ${r.url ? `<a class="r-link" href="${r.url}" target="_blank">${r.url}</a>` : ''}
+                        `;
+                        grid.appendChild(card);
+                    });
+                    out.appendChild(grid);
                 }
-
-                const data = await response.json();
-                log(`◈ Scan completed in ${data.elapsed_seconds || 0}s`, 'green');
-                log(`◈ Total Modules: ${data.total} | Found: ${data.found} | Not Found: ${data.not_found} | Errors: ${data.errors}`, 'cyan');
-                
-                // Build results grid in the terminal log
-                log(`\n◈ DETAILED RESULTS:`, 'green');
-
-                const grid = document.createElement('div');
-                grid.className = 'results-grid';
-
-                data.results.forEach(res => {
-                    const card = document.createElement('div');
-                    const cleanStatusClass = res.status.replace(' ', '');
-                    card.className = `result-card ${cleanStatusClass}`;
-
-                    let metadataHtml = '';
-                    if (res.metadata && Object.keys(res.metadata).length > 0) {
-                        metadataHtml = '<div class="metadata-drawer">';
-                        for (const [k, v] of Object.entries(res.metadata)) {
-                            if (v && typeof v !== 'object') {
-                                metadataHtml += `<div><strong>${k}:</strong> ${v}</div>`;
-                            }
-                        }
-                        metadataHtml += '</div>';
-                    }
-
-                    card.innerHTML = `
-                        <div class="result-card-header">
-                            <span class="card-name">${res.site}</span>
-                            <span class="card-status ${cleanStatusClass}">${res.status}</span>
-                        </div>
-                        ${res.url ? `<a class="card-link" href="${res.url}" target="_blank">${res.url}</a>` : ''}
-                        ${metadataHtml}
-                    `;
-                    grid.appendChild(card);
-                });
-
-                termLog.appendChild(grid);
-                termLog.scrollTop = termLog.scrollHeight;
-
-            } catch (err) {
-                log(`◈ Scan execution failed: ${err.message}`, 'error');
-                log(`◈ Check your Vercel console logs or CORS settings.`, 'yellow');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'INITIALIZE SCAN';
+            } catch (e) {
+                tlog(`◈ Scan failed: ${e.message}`, 'te');
+                tlog(`◈ The API may still be loading. Try again in a moment.`, 'tw');
             }
+
+            btn.disabled = false;
+            btn.textContent = 'SCAN';
+            out.scrollTop = out.scrollHeight;
         }
     </script>
 </body>
