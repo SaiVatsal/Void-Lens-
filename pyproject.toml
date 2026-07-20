@@ -92,5 +92,3 @@ addopts = "-v --tb=short"
 source = ["voidlens"]
 omit = ["tests/*"]
 
-[tool.vercel]
-entrypoint = "voidlens.api:app"
